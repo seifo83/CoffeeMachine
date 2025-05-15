@@ -3,9 +3,9 @@
 namespace App\Tests\CoffeeMachine\Unit\Infrastructure;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MercureTestController
 {

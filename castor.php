@@ -175,6 +175,12 @@ namespace quality {
         io()->section('Analyse avec PHPStan');
         run('docker exec -w /var/www/app coffreo-php vendor/bin/phpstan analyse src tests --level=9');
 
+        io()->title('Initialisation de la base de données de test');
+
+        io()->section('Crée ou met à jour la base de données de test');
+        run('docker exec -w /var/www/app coffreo-php php bin/console --env=test doctrine:database:create --if-not-exists');
+        run('docker exec -w /var/www/app coffreo-php php bin/console --env=test doctrine:schema:update --force');
+
         io()->section('Tests unitaires avec PHPUnit');
         run('docker exec -w /var/www/app coffreo-php bin/phpunit');
 
@@ -191,6 +197,12 @@ namespace test {
     #[AsTask(description: 'Lance tous les tests', aliases: ['all', 'a'])]
     function all(): void
     {
+        io()->title('Initialisation de la base de données de test');
+
+        io()->section('Crée ou met à jour la base de données de test');
+        run('docker exec -w /var/www/app coffreo-php php bin/console --env=test doctrine:database:create --if-not-exists');
+        run('docker exec -w /var/www/app coffreo-php php bin/console --env=test doctrine:schema:update --force');
+
         io()->title('Exécution de tous les tests');
         run('docker exec -w /var/www/app coffreo-php php bin/phpunit');
         io()->success('Tests terminés avec succès! ✅');
@@ -220,9 +232,6 @@ namespace test {
         io()->section('Crée ou met à jour la base de données de test');
         run('docker exec -w /var/www/app coffreo-php php bin/console --env=test doctrine:database:create --if-not-exists');
         run('docker exec -w /var/www/app coffreo-php php bin/console --env=test doctrine:schema:update --force');
-
-        io()->section('Chargement des fixtures de test');
-        run('docker exec -w /var/www/app coffreo-php php bin/console app:create-test-data --target-env=test --init-db --fixtures');
 
         io()->success('Base de données de test initialisée avec succès! 🗄️');
     }
