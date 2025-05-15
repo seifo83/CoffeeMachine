@@ -1,0 +1,6 @@
+api_controllers:
+    resource: '../src/CoffeeMachine/Infrastructure/Controller/'
+    type: attribute
+
+api_login_check:
+    path: /api/login_check

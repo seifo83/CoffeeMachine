@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\CoffeeMachine\Domain\Entity\CoffeeMachine" table="coffee_machine">
+        <!-- Identifiant -->
+        <id name="uuid" type="string" length="36" />
+
+        <!-- Value Objects  -->
+        <field name="status" type="machine_status" length="50" />
+
+        <!-- Timestamps -->
+        <field name="createdAt" type="datetime_immutable" column="created_at" />
+        <field name="updatedAt" type="datetime_immutable" column="updated_at" />
+
+    </entity>
+
+</doctrine-mapping>

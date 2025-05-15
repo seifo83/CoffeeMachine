@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  php-apache:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    container_name: coffreo-php
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../:/var/www
+    depends_on:
+      - mysql
+      - rabbitmq
+    #environment:
+      # The DocumentRoot is configured directly in the Dockerfile
+      # by editing /etc/apache2/sites-available/000-default.conf,
+      # so there's no need to set it via environment variables here.
+      # APACHE_DOCUMENT_ROOT: /var/www/app/public
+
+  mysql:
+    image: mysql:8.0
+    container_name: coffreo-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: coffreo
+      MYSQL_USER: coffreo
+      MYSQL_PASSWORD: coffreo
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: coffreo-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: coffreo-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  worker_messenger:
+    build:
+      context: ../../
+      dockerfile: Dockerfile
+    container_name: coffreo-worker
+    depends_on:
+      - rabbitmq
+      - mysql
+    volumes:
+      - ../../:/var/www
+    command: >
+      php -d memory_limit=512M /var/www/app/bin/console
+      messenger:consume async --bus=command.bus --time-limit=3600 -vv
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  rabbitmq_data:
