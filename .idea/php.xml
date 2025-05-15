@@ -240,6 +240,8 @@
       <path value="$PROJECT_DIR$/app/vendor/liip/test-fixtures-bundle" />
       <path value="$PROJECT_DIR$/app/vendor/doctrine/doctrine-fixtures-bundle" />
       <path value="$PROJECT_DIR$/app/vendor/doctrine/data-fixtures" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/mercure" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/mercure-bundle" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1">
