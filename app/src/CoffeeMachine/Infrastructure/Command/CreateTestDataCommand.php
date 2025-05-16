@@ -8,6 +8,7 @@ use App\CoffeeMachine\Domain\ValueObject\MachineStatus;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -36,4 +37,13 @@ class CreateTestDataCommand extends Command
 
         return Command::SUCCESS;
     }
+
+    protected function configure(): void
+    {
+        $this
+            ->addOption('target-env', null, InputOption::VALUE_REQUIRED, 'Target environment to create test data for', 'dev')
+            ->addOption('init-db', null, InputOption::VALUE_NONE, 'Initialize database schema')
+            ->addOption('fixtures', null, InputOption::VALUE_NONE, 'Load test fixtures');
+    }
+
 }

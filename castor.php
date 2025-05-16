@@ -133,6 +133,17 @@ namespace db {
         run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:schema:update --force');
         io()->success('Schéma de base de données mis à jour avec succès! 🔄');
     }
+
+    #[AsTask(description: 'Met à jour le schéma de la base de données', aliases: ['start'])]
+    function start(): void
+    {
+        run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:create --env=dev --if-not-exists');
+
+        run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:migrations:migrate --no-interaction');
+
+        run('docker exec -w /var/www/app coffreo-php php bin/console app:create-test-data --target-env=dev --init-db');
+
+    }
 }
 
 // Commandes de qualité du code

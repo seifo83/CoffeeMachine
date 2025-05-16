@@ -13,6 +13,8 @@ services:
     depends_on:
       - mysql
       - rabbitmq
+    networks:
+      - app_network_coffreo
     #environment:
       # The DocumentRoot is configured directly in the Dockerfile
       # by editing /etc/apache2/sites-available/000-default.conf,
@@ -30,8 +32,11 @@ services:
       MYSQL_DATABASE: coffreo
       MYSQL_USER: coffreo
       MYSQL_PASSWORD: coffreo
+    command: --default-authentication-plugin=mysql_native_password --bind-address=0.0.0.0
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - app_network_coffreo
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -40,9 +45,11 @@ services:
     ports:
       - "8081:80"
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: coffreo-mysql
       PMA_PORT: 3306
       MYSQL_ROOT_PASSWORD: root
+    networks:
+      - app_network_coffreo
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -55,6 +62,8 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app_network_coffreo
 
   worker_messenger:
     build:
@@ -70,6 +79,8 @@ services:
       php -d memory_limit=512M /var/www/app/bin/console
       messenger:consume async --bus=command.bus --time-limit=3600 -vv
     restart: unless-stopped
+    networks:
+      - app_network_coffreo
 
   mercure:
     image: dunglas/mercure
@@ -88,7 +99,12 @@ services:
       PUBLISH_ALLOWED_ORIGINS: '*'
     ports:
       - "3000:80"
+    networks:
+      - app_network_coffreo
 
+networks:
+  app_network_coffreo:
+    driver: bridge
 
 volumes:
   db_data:
