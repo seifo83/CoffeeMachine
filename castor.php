@@ -1,6 +1,5 @@
 <?php
 
-// Commandes générales Docker
 namespace docker {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -47,7 +46,7 @@ namespace docker {
     }
 }
 
-// Commandes Symfony
+
 namespace symfony {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -74,7 +73,7 @@ namespace symfony {
     }
 }
 
-// Commandes Worker
+
 namespace worker {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -107,7 +106,7 @@ namespace worker {
     }
 }
 
-// Commandes de base de données
+
 namespace db {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -146,7 +145,7 @@ namespace db {
     }
 }
 
-// Commandes de qualité du code
+
 namespace quality {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -199,7 +198,6 @@ namespace quality {
     }
 }
 
-// Commandes de test
 namespace test {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -300,7 +298,7 @@ namespace test {
     }
 }
 
-// Commandes de développement
+
 namespace dev {
     use Castor\Attribute\AsTask;
     use function Castor\run;
@@ -338,26 +336,39 @@ namespace dev {
     }
 }
 
-// Commandes CI/CD
-namespace ci {
+
+namespace front {
+
     use Castor\Attribute\AsTask;
     use function Castor\run;
     use function Castor\io;
 
-    #[AsTask(description: 'Exécute la suite complète de CI', aliases: ['full'])]
-    function full_check(): void
+    #[AsTask(description: 'Nettoie le cache', aliases: ['front-cc'])]
+    function cache(): void
     {
-        io()->title('Exécution de la suite complète de CI');
+        run('npm cache clean --force');
 
-        io()->section('Vérification de la qualité du code');
-        \quality\check_all();
-
-        io()->section('Préparation et exécution des tests fonctionnels');
-        \test\run_functional();
-
-        io()->success('Suite CI complète terminée avec succès! 🚀');
+        io()->section('✅ Nettoyage du cache front terminé');
     }
-}
+
+    #[AsTask(name: 'reset-docker', description: 'Nettoie le cache du front dans Docker et relance le service', aliases: ['front-docker'])]
+    function reset_docker(): void
+    {
+        io()->section('🧼 Suppression du cache et des modules dans le conteneur frontend...');
+
+        run('docker-compose exec frontend rm -rf .next node_modules package-lock.json');
+
+        io()->section('📦 Réinstallation des dépendances...');
+        run('docker-compose exec frontend npm install');
+
+        io()->section('🚀 Relance du serveur Next.js (npm run dev)...');
+        run('docker-compose exec -T frontend npm run dev');
+
+        io()->success('✅ Frontend réinitialisé et relancé dans Docker');
+    }
+
+    }
+
 
 // Raccourcis depuis le namespace global
 namespace {
