@@ -33,6 +33,10 @@ class RequestDTOResolver implements ValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if ($request->isMethod('GET')) {
+            return [];
+        }
+
         $type = $argument->getType();
 
         if (null === $type) {

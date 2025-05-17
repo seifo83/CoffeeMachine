@@ -20,9 +20,14 @@ class MercureTestController
             'timestamp' => (new \DateTimeImmutable())->format(DATE_ATOM),
         ];
 
+        $jsonPayload = json_encode($payload);
+        if (false === $jsonPayload) {
+            throw new \RuntimeException('Failed to encode payload');
+        }
+
         $update = new Update(
             ['orders/test-123'],
-            json_encode($payload)
+            $jsonPayload
         );
 
         $hub->publish($update);

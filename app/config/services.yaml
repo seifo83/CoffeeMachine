@@ -47,5 +47,5 @@ services:
         class: App\CoffeeMachine\Infrastructure\Repository\CoffeeOrderRepository
 
     # Resolver
-    App\Shared\Infrastructure\Resolver\RequestDTOResolver:
+    App\CoffeeMachine\Infrastructure\Resolver\RequestDTOResolver:
         tags: [ 'controller.argument_value_resolver' ]

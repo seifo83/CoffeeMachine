@@ -39,7 +39,8 @@ class ApiKeyUserProvider implements UserProviderInterface, PasswordUpgraderInter
         return new User(
             $identifier,
             $userData['password'],
-            $userData['roles']
+            $userData['roles'],
+            '491050c8-8cae-4d55-b7d8-d91f70bf71bf'
         );
     }
 
