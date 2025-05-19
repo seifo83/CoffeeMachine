@@ -154,20 +154,13 @@
       <path value="$PROJECT_DIR$/app/vendor/theseer/tokenizer 2" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-mbstring" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/console" />
-      <path value="$PROJECT_DIR$/app/vendor/symfony/process" />
-      <path value="$PROJECT_DIR$/app/vendor/symfony/password-hasher" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/clock" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/stimulus-bundle" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/dependency-injection" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/cache-contracts" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-intl-grapheme" />
       <path value="$PROJECT_DIR$/app/vendor/monolog/monolog" />
-      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-file-iterator" />
-      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-invoker" />
-      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-code-coverage" />
       <path value="$PROJECT_DIR$/app/vendor/phpunit/php-text-template" />
-      <path value="$PROJECT_DIR$/app/vendor/phpunit/phpunit" />
-      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-timer" />
       <path value="$PROJECT_DIR$/app/vendor/phpstan/phpdoc-parser" />
       <path value="$PROJECT_DIR$/app/vendor/phpstan/phpstan" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/monolog-bundle" />
@@ -237,6 +230,20 @@
       <path value="$PROJECT_DIR$/app/vendor/symfony/property-info" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/http-client-contracts" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/service-contracts" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-file-iterator 2" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-timer 2" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-code-coverage 2" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/phpunit 2" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-invoker 2" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/process 2" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/password-hasher 2" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/password-hasher" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/process" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/app/vendor/phpunit/php-timer" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1">
