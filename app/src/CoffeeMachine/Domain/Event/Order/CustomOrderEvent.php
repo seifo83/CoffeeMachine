@@ -12,7 +12,7 @@ class CustomOrderEvent extends AbstractCoffeeOrderEvent
         string $orderUuid,
         string $coffeeType,
         string $orderStatus,
-        ?string $description = null
+        ?string $description = null,
     ) {
         parent::__construct($orderUuid, $coffeeType, $orderStatus);
         $this->description = $description;

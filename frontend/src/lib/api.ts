@@ -62,3 +62,28 @@ export async function orderCoffee(machineUuid: string, token: string, order: {
     return await response.json();
 }
 
+export async function cancelOrder(machineUuid: string, token: string): Promise<string | null> {
+    try {
+        const response = await fetch(
+            `http://localhost:8080/api/machines/${machineUuid}/orders/last`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return data.message || 'Erreur lors de l\'annulation';
+        }
+
+        return null;
+    } catch (error) {
+        console.error('Erreur lors de l\'annulation:', error);
+        return 'Erreur de connexion au serveur';
+    }
+}

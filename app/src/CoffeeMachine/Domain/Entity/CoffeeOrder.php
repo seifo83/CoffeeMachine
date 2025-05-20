@@ -27,7 +27,6 @@ class CoffeeOrder
     public const STEP_PREPARING = 1;
     public const STEP_COMPLETED = 6;
 
-
     public function __construct(
         CoffeeType $type,
         CoffeeIntensity $intensity,
@@ -107,7 +106,6 @@ class CoffeeOrder
         $event = new OrderCompleted($this->uuid, $this->type->getValue(), self::STEP_COMPLETED);
 
         $this->recordEvent($event);
-
     }
 
     public function cancel(): void

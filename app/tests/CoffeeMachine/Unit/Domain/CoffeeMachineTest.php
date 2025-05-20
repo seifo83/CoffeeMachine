@@ -115,6 +115,9 @@ class CoffeeMachineTest extends TestCase
         $this->assertCount(1, $machine->getOrders());
     }
 
+    /**
+     * @throws OrderException
+     */
     public function testCancelExistingOrder(): void
     {
         $machine = $this->createMachine('on');

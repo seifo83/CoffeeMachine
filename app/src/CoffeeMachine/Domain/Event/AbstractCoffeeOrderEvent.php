@@ -41,5 +41,4 @@ abstract class AbstractCoffeeOrderEvent
     {
         $this->stepIndex = $index;
     }
-
 }

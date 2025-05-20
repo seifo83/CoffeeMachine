@@ -13,5 +13,4 @@ class OrderStarted extends AbstractCoffeeOrderEvent
 
         $this->setStepIndex($stepIndex);
     }
-
 }

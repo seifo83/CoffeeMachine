@@ -11,7 +11,7 @@ class NotifyFrontWithProcessOrderTest extends TestCase
 {
     public function testItGeneratesPayloadFromEvent(): void
     {
-        $event = new OrderStarted('order-123', 'espresso', 'preparing');
+        $event = new OrderStarted('order-123', 'espresso', 1);
 
         $hubMock = $this->createMock(HubInterface::class);
         $listener = new NotifyFrontWithProcessOrder($hubMock);

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import PowerButton from "@/components/PowerButton";
-import { login, orderCoffee, getMachineUuid } from "@/lib/api";
+import { login, orderCoffee, getMachineUuid, cancelOrder } from "@/lib/api";
 
 export default function Home() {
     const [machineStatus, setMachineStatus] = useState(false);
@@ -15,6 +15,8 @@ export default function Home() {
     const [selectedSugarLevel, setSelectedSugarLevel] = useState<string | null>(null);
     const [progressPercentage, setProgressPercentage] = useState(0);
     const [statusHistory, setStatusHistory] = useState<{ message: string, stepIndex: number }[]>([]);
+    const [isCancellable, setIsCancellable] = useState(true);
+
 
     const coffeeTypes = [
         { label: "Espresso", value: "espresso" },
@@ -46,11 +48,9 @@ export default function Home() {
     useEffect(() => {
         login()
             .then(() => {
-                console.log("✅ Connexion réussie");
                 return getMachineUuid();
             })
             .then((uuid) => {
-                console.log("🎯 UUID machine :", uuid);
                 setMachineUuid(uuid);
             })
             .catch((error) => {
@@ -85,18 +85,26 @@ export default function Home() {
 
     async function handleOrder() {
         if (!selectedCoffeeType || !selectedIntensity || !selectedSugarLevel) {
-            alert("Veuillez faire tous les choix avant de commander.");
+            setStatusMessage("Veuillez faire tous les choix avant de commander.");
+
+            setTimeout(() => {
+                setStatusMessage(null);
+                setSelectedCoffeeType(null);
+                setSelectedIntensity(null);
+                setSelectedSugarLevel(null);
+            }, 3000);
+
             return;
         }
 
         const token = localStorage.getItem("token");
         if (!token) {
-            alert("Token manquant. Veuillez vous reconnecter.");
+            console.error("Token manquant. Veuillez vous reconnecter.");
             return;
         }
 
         if (!machineUuid) {
-            alert("La machine n'est pas encore prête. Veuillez patienter.");
+            setStatusMessage("La machine n'est pas encore prête. Veuillez patienter.");
             return;
         }
 
@@ -137,9 +145,92 @@ export default function Home() {
         }
     }
 
+    async function handleCancelOrder() {
+        if (!machineUuid) {
+            console.error("Impossible d'annuler : Machine non identifiée");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("Token manquant. Veuillez vous reconnecter.");
+                return;
+            }
+
+            await cancelOrder(machineUuid, token);
+
+            if (eventSource) {
+                eventSource.close();
+                setEventSource(null);
+            }
+
+            setIsOrdering(false);
+            setStatusMessage("Commande annulée");
+            setProgressPercentage(0);
+            setStatusHistory([]);
+            setSelectedCoffeeType(null);
+            setSelectedIntensity(null);
+            setSelectedSugarLevel(null);
+
+        } catch (error: any) {
+            if (error instanceof Error) {
+                console.error(`Impossible d'annuler la commande: ${error.message}`);
+            } else {
+                console.error("Impossible d'annuler la commande");
+            }
+        }
+    }
+
+    async function handleCancel() {
+        if (isOrdering) {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    setStatusMessage("Token manquant. Veuillez vous reconnecter.");
+                    return;
+                }
+
+                if (!machineUuid) {
+                    setStatusMessage("Machine non identifiée.");
+                    return;
+                }
+
+                const errorMessage = await cancelOrder(machineUuid, token);
+
+                if (errorMessage) {
+                    setStatusMessage(errorMessage);
+                    return;
+                }
+
+                if (eventSource) {
+                    eventSource.close();
+                    setEventSource(null);
+                }
+
+                setIsOrdering(false);
+                setStatusMessage("Commande annulée avec succès");
+                setProgressPercentage(0);
+                setStatusHistory([]);
+                setSelectedCoffeeType(null);
+                setSelectedIntensity(null);
+                setSelectedSugarLevel(null);
+            } catch (error) {
+                console.error("Erreur d'annulation:", error);
+                setStatusMessage("Erreur lors de l'annulation");
+            }
+        }
+        // Si aucune commande n'est en cours, on réinitialise juste les sélections
+        else {
+            setSelectedCoffeeType(null);
+            setSelectedIntensity(null);
+            setSelectedSugarLevel(null);
+        }
+    }
+
     return (
         <main className="bg-black min-h-screen text-white p-10">
-            <h1 className="text-3xl font-bold text-center pt-10">
+            <h1 className="text-3xl font-bold text-center">
                 Machine à Café by Coffreo
             </h1>
 
@@ -200,21 +291,16 @@ export default function Home() {
                             </button>
                             <button
                                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-                                onClick={() => {
-                                    setSelectedCoffeeType(null);
-                                    setSelectedIntensity(null);
-                                    setSelectedSugarLevel(null);
-                                }}
-                                disabled={isOrdering}
+                                onClick={handleCancel}
                             >
-                                Annuler
+                                {isOrdering ? "Annuler café" : "Annuler"}
                             </button>
                         </div>
                     </div>
 
                     {/* Bloc central de sélection */}
                     <div className="flex flex-col gap-6 items-center w-full">
-                        <ChoiceGroup
+                    <ChoiceGroup
                             title="Café :"
                             options={coffeeTypes}
                             selected={selectedCoffeeType}

@@ -2,12 +2,12 @@
 
 namespace App\CoffeeMachine\Infrastructure\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Attribute\Route;
 
 class MercureController extends AbstractController
 {
@@ -31,7 +31,7 @@ class MercureController extends AbstractController
 
             return new JsonResponse(['token' => $token->toString()]);
         } catch (\Exception $e) {
-            error_log('Erreur JWT: ' . $e->getMessage());
+            error_log('Erreur JWT: '.$e->getMessage());
 
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
