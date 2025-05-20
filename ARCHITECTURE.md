@@ -77,13 +77,11 @@ Cela simplifie la logique en évitant des couches d’événements métier tout 
 
 ```mermaid
 graph TD
-A[Client ➜ API POST /api/machines/:uuid/orders] -->|commande| B[CreateOrderCommand]
-B -->|dispatch async| C[StartOrderMessageHandler (RabbitMQ)]
-C -->|publie statut preparing| D[[Mercure ➜ Frontend]]
-C -->|simulation café| E[Commande prête]
-E -->|publie statut ready| F[[Mercure ➜ Frontend]]
-G[Client ➜ API DELETE /orders/last] -->|annulation| H[CancelOrderController]
-H -->|publie statut cancelled| I[[Mercure ➜ Frontend]]
+    A[Client API POST /api/machines/:uuid/orders] -->|commande| B[CreateOrderCommand]
+    B -->|dispatch async| C[StartOrderMessageHandler RabbitMQ]
+    C -->|publie statut preparing| D[[Mercure Frontend]]
+    C -->|simulation cafe| E[Commande prete]
+    E -->|publie statut ready| F[[Mercure Frontend]]
 ```
 
 ---
