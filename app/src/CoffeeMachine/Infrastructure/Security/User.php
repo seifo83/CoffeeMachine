@@ -12,15 +12,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /** @var string[] */
     private array $roles;
+    private string $machineId;
 
     /**
      * @param string[] $roles
      */
-    public function __construct(string $username, string $password, array $roles)
+    public function __construct(string $username, string $password, array $roles, string $machineId)
     {
         $this->username = $username;
         $this->password = $password;
         $this->roles = $roles;
+        $this->machineId = $machineId;
     }
 
     public function getUserIdentifier(): string
@@ -39,6 +41,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         return $this->roles;
+    }
+
+    public function getMachineId(): string
+    {
+        return $this->machineId;
     }
 
     public function eraseCredentials(): void

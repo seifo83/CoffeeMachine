@@ -8,6 +8,8 @@ abstract class AbstractCoffeeOrderEvent
     protected string $coffeeType;
     protected string $orderStatus;
 
+    protected int $stepIndex = 999;
+
     public function __construct(string $orderUuid, string $coffeeType, string $orderStatus)
     {
         $this->orderUuid = $orderUuid;
@@ -28,5 +30,15 @@ abstract class AbstractCoffeeOrderEvent
     public function getOrderStatus(): string
     {
         return $this->orderStatus;
+    }
+
+    public function getStepIndex(): int
+    {
+        return $this->stepIndex ?? 999;
+    }
+
+    public function setStepIndex(int $index): void
+    {
+        $this->stepIndex = $index;
     }
 }

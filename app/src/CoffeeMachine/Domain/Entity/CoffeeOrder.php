@@ -24,6 +24,9 @@ class CoffeeOrder
     private \DateTimeImmutable $createdAt;
     private \DateTimeImmutable $updatedAt;
 
+    public const STEP_PREPARING = 1;
+    public const STEP_COMPLETED = 6;
+
     public function __construct(
         CoffeeType $type,
         CoffeeIntensity $intensity,
@@ -92,23 +95,25 @@ class CoffeeOrder
         $this->status = new OrderStatus(OrderStatus::PREPARING);
         $this->updatedAt = new \DateTimeImmutable();
 
-        $this->recordEvent(new OrderStarted($this->uuid, $this->type->getValue(), $this->status->getValue()));
+        $this->recordEvent(new OrderStarted($this->uuid, $this->type->getValue(), self::STEP_PREPARING));
     }
 
     public function complete(): void
+    {
+        $this->status = new OrderStatus(OrderStatus::COMPLETED);
+        $this->updatedAt = new \DateTimeImmutable();
+
+        $event = new OrderCompleted($this->uuid, $this->type->getValue(), self::STEP_COMPLETED);
+
+        $this->recordEvent($event);
+    }
+
+    public function cancel(): void
     {
         if (OrderStatus::PREPARING !== $this->status->getValue()) {
             throw new \LogicException('Order can only be completed if it is currently being prepared.');
         }
 
-        $this->status = new OrderStatus(OrderStatus::COMPLETED);
-        $this->updatedAt = new \DateTimeImmutable();
-
-        $this->recordEvent(new OrderCompleted($this->uuid, $this->type->getValue(), $this->status->getValue()));
-    }
-
-    public function cancel(): void
-    {
         $this->status = new OrderStatus(OrderStatus::CANCELLED);
         $this->updatedAt = new \DateTimeImmutable();
     }

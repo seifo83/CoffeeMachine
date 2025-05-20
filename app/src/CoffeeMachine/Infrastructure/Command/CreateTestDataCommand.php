@@ -5,9 +5,11 @@ namespace App\CoffeeMachine\Infrastructure\Command;
 use App\CoffeeMachine\Domain\Entity\CoffeeMachine;
 use App\CoffeeMachine\Domain\Repository\CoffeeMachineRepositoryInterface;
 use App\CoffeeMachine\Domain\ValueObject\MachineStatus;
+use Ramsey\Uuid\Nonstandard\Uuid;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -29,11 +31,21 @@ class CreateTestDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $machine = new CoffeeMachine(new MachineStatus('on'));
+        $uuid = Uuid::fromString('491050c8-8cae-4d55-b7d8-d91f70bf71bf');
+        $machine = new CoffeeMachine(new MachineStatus('on'), $uuid);
+
         $this->machineRepository->save($machine);
 
         $io->success(sprintf('Coffee machine created with UUID: %s', $machine->getUuid()));
 
         return Command::SUCCESS;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addOption('target-env', null, InputOption::VALUE_REQUIRED, 'Target environment to create test data for', 'dev')
+            ->addOption('init-db', null, InputOption::VALUE_NONE, 'Initialize database schema')
+            ->addOption('fixtures', null, InputOption::VALUE_NONE, 'Load test fixtures');
     }
 }
