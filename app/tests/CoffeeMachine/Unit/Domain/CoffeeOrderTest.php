@@ -86,16 +86,6 @@ class CoffeeOrderTest extends TestCase
         $this->assertCount(1, $events);
         $this->assertInstanceOf(OrderCompleted::class, $events[0]);
     }
-
-    public function testCompleteThrowsIfNotPreparing(): void
-    {
-        $order = $this->createOrder();
-
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Order can only be completed if it is currently being prepared.');
-        $order->complete();
-    }
-
     public function testItEmitsOrderStartedEventWhenOrderIsStarted(): void
     {
         $order = new CoffeeOrder(

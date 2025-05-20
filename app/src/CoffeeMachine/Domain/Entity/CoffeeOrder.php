@@ -110,7 +110,7 @@ class CoffeeOrder
 
     public function cancel(): void
     {
-        if (OrderStatus::PREPARING !== $this->status->getValue()) {
+        if (OrderStatus::PENDING !== $this->status->getValue()) {
             throw new \LogicException('Order can only be completed if it is currently being prepared.');
         }
 

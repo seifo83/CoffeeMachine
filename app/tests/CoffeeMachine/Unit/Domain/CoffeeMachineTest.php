@@ -121,6 +121,7 @@ class CoffeeMachineTest extends TestCase
     public function testCancelExistingOrder(): void
     {
         $machine = $this->createMachine('on');
+
         $order = $machine->createOrder(
             new CoffeeType('latte'),
             new CoffeeIntensity('low'),
@@ -129,11 +130,13 @@ class CoffeeMachineTest extends TestCase
         $machine->releaseEvents();
 
         $this->assertNotNull($order);
+
         $result = $machine->cancelOrder($order);
 
         $this->assertTrue($result);
 
         $events = $machine->releaseEvents();
+
         $this->assertCount(1, $events);
         $this->assertInstanceOf(MachineOrderCancelled::class, $events[0]);
     }
