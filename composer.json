@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "jolicode/castor": "^0.25.0"
+    }
+}

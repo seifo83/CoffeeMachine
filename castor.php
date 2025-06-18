@@ -423,12 +423,24 @@ namespace {
     {
         io()->title('Démarrage rapide du projet Coffee Machine');
 
+        // 0. Vérifier/installer Castor (facultatif si déjà géré ailleurs)
+        if (!file_exists('castor.phar')) {
+            io()->note('🔧 Castor non détecté, installation en cours...');
+            run('curl -sSL https://github.com/jolicode/castor/releases/latest/download/castor.phar -o castor.phar');
+            run('chmod +x castor.phar');
+            io()->success('✅ Castor installé');
+        }
+
         io()->section('1/5 - Démarrage des conteneurs Docker');
         \docker\start();
 
         // Attendre que les conteneurs soient prêts
         io()->text('Attente de 5 secondes pour l\'initialisation des conteneurs...');
         sleep(5);
+
+        io()->section('1.5 - Installation des dépendances PHP (composer install)');
+        run('docker exec -w /var/www/app coffreo-php composer install');
+        io()->success('✅ Dépendances backend installées');
 
         io()->section('2/5 - Gestion de la base de données');
 
@@ -458,7 +470,7 @@ namespace {
         // Liste des URLs et informations utiles
         io()->text([
             '<info>Informations utiles:</info>',
-            '• API: <href=http://localhost:8080/api/machines>http://localhost:8080/api/machines</>',
+            '• URL: <href=http://localhost:3010>http://localhost:3010</>',
             '• Base de données: mysql://root:password@localhost:3306/coffee_machine',
             '• Pour interagir avec le projet: <comment>castor help</comment>',
             '• Pour voir les logs: <comment>castor docker:logs</comment>',
