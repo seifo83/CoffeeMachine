@@ -430,16 +430,16 @@ namespace {
         io()->text('Attente de 5 secondes pour l\'initialisation des conteneurs...');
         sleep(5);
 
-        io()->section('2/5 - Vérification de la base de données');
-        // Vérifier si la base de données existe déjà
-        $result = run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:exists', allowFailure: true);
+        io()->section('2/5 - Gestion de la base de données');
 
-        if (!$result->isSuccessful()) {
-            io()->text('La base de données n\'existe pas encore, création en cours...');
-            \db\create();
-        } else {
-            io()->text('La base de données existe déjà ✓');
-        }
+        // Supprimer la base si elle existe
+        io()->text('Suppression de l\'ancienne base de données si elle existe...');
+        run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:drop --force --if-exists', allowFailure: true);
+
+        // Créer une nouvelle base
+        io()->text('Création d\'une nouvelle base de données...');
+        run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:create');
+
 
         io()->section('3/5 - Mise à jour du schéma de la base de données');
         \db\update_schema();
