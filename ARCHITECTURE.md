@@ -1,6 +1,6 @@
-# 🧱 Documentation d’Architecture — Machine à Café Connectée
+# Documentation d’Architecture — Machine à Café Connectée
 
-## 🎯 Objectif du projet
+## Objectif du projet
 
 Ce projet simule une machine à café connectée permettant :
 
@@ -12,7 +12,7 @@ Ce projet met en œuvre une architecture moderne (DDD, CQRS, messaging async) ap
 
 ---
 
-## 🧰 Stack technique
+## Stack technique
 
 
 | Côté        | Technologie              | Usage                                  |
@@ -31,7 +31,7 @@ Ce projet met en œuvre une architecture moderne (DDD, CQRS, messaging async) ap
 
 ---
 
-## 🧠 Architecture choisie
+## Architecture choisie
 
 ### 1. DDD — Domain Driven Design
 
@@ -51,7 +51,7 @@ Séparation stricte :
 Certaines actions, comme la préparation d’un café, nécessitent un traitement différé.  
 Plutôt que de bloquer l’utilisateur ou d’implémenter une attente côté front, ce projet s’appuie sur un modèle **asynchrone** à l’aide du **composant Messenger de Symfony**.
 
-#### 🔄 Fonctionnement
+#### Fonctionnement
 
 - Lorsqu’une commande est passée, un objet `StartOrderMessage` est dispatché.
 - Celui-ci est routé vers un **transport asynchrone** (ici RabbitMQ).
@@ -73,7 +73,7 @@ Cela simplifie la logique en évitant des couches d’événements métier tout 
 
 ---
 
-## 🔁 Cycle de vie d’une commande
+## Cycle de vie d’une commande
 
 ```mermaid
 graph TD
@@ -86,21 +86,21 @@ graph TD
 
 ---
 
-## 🧪 Tests
+## Tests
 
 - Tests fonctionnels et unitaire sur l’API
 - Objectif : valider le cycle complet de commande
 
 ---
 
-## 🔐 Sécurité
+## Sécurité
 
 - Authentification via JWT
 - Accès API conditionné au token JWT
 
 ---
 
-## 📦 Déploiement & Docker
+## Déploiement & Docker
 
 - Docker compose pour PHP + DB + RabbitMQ + Mercure + phpMyAdmin
 - Lancement global via :
@@ -111,7 +111,7 @@ castor up
 
 ---
 
-## 🎥 Front-end
+## Front-end
 
 - Réalisé en Next.js
 - API consommée en REST
@@ -120,7 +120,7 @@ castor up
 
 ---
 
-### 📡 API REST disponible
+### API REST disponible
 
 | Méthode | URL | Description |
 |--------|-----|-------------|
@@ -130,4 +130,4 @@ castor up
 | `DELETE` | `/api/machines/{uuid}/orders/last` | Annule la dernière commande si elle est en cours |
 | `POST` | `/api/login_check` | Authentification via JWT |
 
-> 🔐 Les routes de commande nécessitent un **token JWT valide** dans l’en-tête `Authorization`.
+> Les routes de commande nécessitent un **token JWT valide** dans l’en-tête `Authorization`.
