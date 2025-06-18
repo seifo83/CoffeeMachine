@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Power } from "lucide-react";
+import { login } from "../lib/api";
 
 type Props = {
     machineStatus: boolean;
@@ -9,12 +10,24 @@ type Props = {
 };
 
 export default function PowerButton({ machineStatus, setMachineStatus }: Props) {
+    const handleClick = async () => {
+        try {
+            let token = localStorage.getItem("token");
+
+            if (!token) {
+                token = await login();
+            }
+
+            setMachineStatus(!machineStatus);
+        } catch (error) {
+            console.error("Erreur d'authentification :", error);
+        }
+    };
+
     return (
         <button
-            onClick={() => setMachineStatus(!machineStatus)}
-            className={`p-4 rounded-full shadow-lg 
-                ${machineStatus ? "dark:bg-white/[.70] text-black" : "bg-white text-black"}
-      `}
+            onClick={handleClick}
+            className="p-4 rounded-full shadow-lg bg-white text-black"
         >
             <Power size={32} />
         </button>

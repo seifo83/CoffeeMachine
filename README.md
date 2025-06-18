@@ -27,17 +27,26 @@ Le projet utilise une architecture moderne basée sur Symfony (DDD, CQRS, Event)
 
 ---
 
-## 🚀 Lancement rapide
+## 🚀 Lancer le projet en une seule commande
+
+Copiez-collez cette ligne dans le terminal :
 
 ```bash
-castor quickstart
+composer require --dev jolicode/castor --no-interaction && vendor/bin/castor quickstart
 ```
 
-Puis, accédez à l’interface front à l’adresse :
+🔧 Cette commande :
 
-```
-http://localhost:3010
-```
+Installe l’outil Castor localement (dev)
+
+Lance automatiquement le démarrage complet du projet:
+
+Prépare Docker, installe les dépendances, initialise la base de données et les données de démo
+
+🟢 Backend : http://localhost:8080/api/machines
+
+
+🟢 Frontend : http://localhost:3010
 
 ---
 

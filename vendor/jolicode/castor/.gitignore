@@ -1,0 +1,14 @@
+.castor.stub.php
+/.php-cs-fixer.cache
+/.phpunit.cache
+/my-app.*
+/var/
+/vendor/
+/tests/Examples/fixtures/**/.castor.stub.php
+/tests/fixtures/crypto
+/castor.*
+!/castor.php
+!/castor.composer.json
+!/castor.composer.lock
+site/
+/tools/release/artifacts/

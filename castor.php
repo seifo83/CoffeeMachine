@@ -423,6 +423,14 @@ namespace {
     {
         io()->title('Démarrage rapide du projet Coffee Machine');
 
+        // 0. Vérifier/installer Castor (facultatif si déjà géré ailleurs)
+        if (!file_exists('castor.phar')) {
+            io()->note('🔧 Castor non détecté, installation en cours...');
+            run('curl -sSL https://github.com/jolicode/castor/releases/latest/download/castor.phar -o castor.phar');
+            run('chmod +x castor.phar');
+            io()->success('✅ Castor installé');
+        }
+
         io()->section('1/5 - Démarrage des conteneurs Docker');
         \docker\start();
 
@@ -430,16 +438,20 @@ namespace {
         io()->text('Attente de 5 secondes pour l\'initialisation des conteneurs...');
         sleep(5);
 
-        io()->section('2/5 - Vérification de la base de données');
-        // Vérifier si la base de données existe déjà
-        $result = run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:exists', allowFailure: true);
+        io()->section('1.5 - Installation des dépendances PHP (composer install)');
+        run('docker exec -w /var/www/app coffreo-php composer install');
+        io()->success('✅ Dépendances backend installées');
 
-        if (!$result->isSuccessful()) {
-            io()->text('La base de données n\'existe pas encore, création en cours...');
-            \db\create();
-        } else {
-            io()->text('La base de données existe déjà ✓');
-        }
+        io()->section('2/5 - Gestion de la base de données');
+
+        // Supprimer la base si elle existe
+        io()->text('Suppression de l\'ancienne base de données si elle existe...');
+        run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:drop --force --if-exists', allowFailure: true);
+
+        // Créer une nouvelle base
+        io()->text('Création d\'une nouvelle base de données...');
+        run('docker exec -w /var/www/app coffreo-php php bin/console doctrine:database:create');
+
 
         io()->section('3/5 - Mise à jour du schéma de la base de données');
         \db\update_schema();
@@ -458,7 +470,7 @@ namespace {
         // Liste des URLs et informations utiles
         io()->text([
             '<info>Informations utiles:</info>',
-            '• API: <href=http://localhost:8080/api/machines>http://localhost:8080/api/machines</>',
+            '• URL: <href=http://localhost:3010>http://localhost:3010</>',
             '• Base de données: mysql://root:password@localhost:3306/coffee_machine',
             '• Pour interagir avec le projet: <comment>castor help</comment>',
             '• Pour voir les logs: <comment>castor docker:logs</comment>',

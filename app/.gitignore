@@ -7,6 +7,9 @@
 /public/bundles/
 /var/
 /vendor/
+.idea
+.DS_Store
+.castor.stub.php
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
@@ -32,7 +35,3 @@
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
-
-###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
-###< lexik/jwt-authentication-bundle ###
