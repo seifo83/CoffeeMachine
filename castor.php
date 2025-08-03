@@ -423,26 +423,41 @@ namespace {
     {
         io()->title('Démarrage rapide du projet Coffee Machine');
 
-        // 0. Vérifier/installer Castor (facultatif si déjà géré ailleurs)
-        if (!file_exists('castor.phar')) {
+        // Définir le chemin vers castor.phar et l’alias ./castor
+        $localPhar = __DIR__ . '/castor.phar';
+        $aliasCastor = __DIR__ . '/castor';
+
+        // 0. Vérifier et installer castor.phar si nécessaire
+        if (!file_exists($localPhar)) {
             io()->note('🔧 Castor non détecté, installation en cours...');
             run('curl -sSL https://github.com/jolicode/castor/releases/latest/download/castor.phar -o castor.phar');
             run('chmod +x castor.phar');
-            io()->success('✅ Castor installé');
+            io()->success('✅ castor.phar installé localement');
+        }
+
+        // 1. Créer un alias ./castor exécutable (wrapper pour php castor.phar)
+        if (!file_exists($aliasCastor)) {
+            file_put_contents($aliasCastor, "#!/bin/sh\nphp \"$(dirname \"$0\")/castor.phar\" \"\$@\"\n");
+            run('chmod +x castor');
+            io()->success('✅ Alias ./castor créé');
         }
 
         io()->section('1/5 - Démarrage des conteneurs Docker');
         \docker\start();
 
         // Attendre que les conteneurs soient prêts
-        io()->text('Attente de 5 secondes pour l\'initialisation des conteneurs...');
-        sleep(5);
-
-        io()->section('1.5 - Installation des dépendances PHP (composer install)');
-        run('docker exec -w /var/www/app coffreo-php composer install');
-        io()->success('✅ Dépendances backend installées');
+        io()->text('Attente de 15 secondes pour l\'initialisation des conteneurs...');
+        sleep(15);
 
         io()->section('2/5 - Gestion de la base de données');
+
+        $vendorCheck = trim(shell_exec('docker exec coffreo-php sh -c "[ -d /var/www/app/vendor ] && echo yes || echo no"'));
+
+        if ($vendorCheck === "no") {
+            io()->note('📦 Dépendances Symfony manquantes. Installation avec Composer...');
+            run('docker exec -w /var/www/app coffreo-php composer install');
+            io()->success('✅ Dépendances Symfony installées !');
+        }
 
         // Supprimer la base si elle existe
         io()->text('Suppression de l\'ancienne base de données si elle existe...');

@@ -1,4 +1,4 @@
-# ☕ Machine à Café Connectée
+# Machine à Café Connectée
 
 Ce projet simule une machine à café connectée. Il permet aux utilisateurs de :
 
@@ -11,28 +11,29 @@ Le projet utilise une architecture moderne basée sur Symfony (DDD, CQRS, Event)
 
 ---
 
-## 🧰 Stack technique
+## Stack technique
 
-| 🧩 Composant     | 🛠️ Technologie                          | 📌 Usage                                        |
-|------------------|------------------------------------------|------------------------------------------------|
-| Back-end API     | Symfony 6.4 (DDD, CQRS, Messenger)       | Traitement métier, API REST                    |
-| Asynchrone       | RabbitMQ + Symfony Messenger             | Gestion des commandes différées (workers)      |
-| Front-end        | Next.js (React)                          | Interface utilisateur interactive              |
-| Temps réel       | Mercure                                  | Affichage des statuts de commande en direct    |
-| Authentification | JWT (LexikJWTAuthenticationBundle)       | Sécurisation des routes API                    |
-| Environnement    | Docker                                   | Environnement de dev homogène et portable      |
-| Tests            | PHPUnit                                  | Tests fonctionnels avec base isolée            |
-| Qualité code     | PHPStan (niveau 9)                       | Analyse statique stricte                       |
-| Formatage code   | PHP-CS-Fixer                             | Respect des conventions PSR & mise en forme    |
+| Composant        | Technologie                            |  Usage                                        |
+|------------------|----------------------------------------|------------------------------------------------|
+| Back-end API     | Symfony 6.4 (DDD, CQRS, Messenger)     | Traitement métier, API REST                    |
+| Asynchrone       | RabbitMQ + Symfony Messenger           | Gestion des commandes différées (workers)      |
+| Front-end        | Next.js (React)                        | Interface utilisateur interactive              |
+| Temps réel       | Mercure                                | Affichage des statuts de commande en direct    |
+| Authentification | JWT (LexikJWTAuthenticationBundle)     | Sécurisation des routes API                    |
+| Environnement    | Docker                                 | Environnement de dev homogène et portable      |
+| Tests            | PHPUnit                                | Tests fonctionnels avec base isolée            |
+| Qualité code     | PHPStan (niveau 9)                     | Analyse statique stricte                       |
+| Formatage code   | PHP-CS-Fixer                           | Respect des conventions PSR & mise en forme    |
 
 ---
 
-## 🚀 Lancer le projet en une seule commande
+## Lancer le projet en une seule commande
 
 Copiez-collez cette ligne dans le terminal :
 
 ```bash
 composer require --dev jolicode/castor --no-interaction && vendor/bin/castor quickstart
+
 ```
 
 🔧 Cette commande :
@@ -50,7 +51,7 @@ Prépare Docker, installe les dépendances, initialise la base de données et le
 
 ---
 
-## 🧪 Lancer les tests
+## Lancer les tests
 
 ```bash
 castor test
@@ -58,7 +59,7 @@ castor test
 
 ---
 
-## 🔒 Authentification
+## Authentification
 
 Certaines routes de l’API nécessitent un token JWT. Pour générer un token :
 
@@ -78,7 +79,7 @@ Authorization: Bearer <votre_token>
 
 ---
 
-## 🔍 Architecture
+##  Architecture
 
 Le projet suit une architecture orientée DDD et CQRS avec séparation claire :
 
@@ -86,7 +87,7 @@ Le projet suit une architecture orientée DDD et CQRS avec séparation claire :
 - `Application` : cas d’usage (commands / queries)
 - `Infrastructure` : contrôleurs, repos, events, etc.
 
-> 📘 Pour les détails complets de l’architecture :  
-👉 [Voir ARCHITECTURE.md](./ARCHITECTURE.md)
+> Pour les détails complets de l’architecture :  
+ [Voir ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ---
