@@ -215,6 +215,10 @@ export default function Home() {
                 setSelectedCoffeeType(null);
                 setSelectedIntensity(null);
                 setSelectedSugarLevel(null);
+
+                setTimeout(() => {
+                    setStatusMessage(null);
+                }, 3000);
             } catch (error) {
                 console.error("Erreur d'annulation:", error);
                 setStatusMessage("Erreur lors de l'annulation");

@@ -30,7 +30,7 @@ Le projet utilise une architecture moderne basée sur Symfony (DDD, CQRS, Event)
 ## Lancement rapide
 
 ```bash
-castor quickstart
+./castor quickstart
 ```
 
 Puis, accédez à l’interface front à l’adresse :
