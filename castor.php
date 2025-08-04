@@ -168,7 +168,7 @@ namespace quality {
     function phpstan(int $level = 9): void
     {
         io()->title('Analyse du code avec PHPStan (niveau ' . $level . ')');
-        run('docker exec -w /var/www/app coffreo-php vendor/bin/phpstan analyse src tests --level=' . $level);
+        run('docker exec -w /var/www/app coffreo-php vendor/bin/phpstan analyse src tests --level=' . $level . ' --memory-limit=512M');
     }
 
     #[AsTask(description: 'Vérifie la qualité du code avec plusieurs outils', aliases: ['all'])]
@@ -183,7 +183,7 @@ namespace quality {
         run('docker exec -w /var/www/app coffreo-php vendor/bin/php-cs-fixer fix --dry-run');
 
         io()->section('Analyse avec PHPStan');
-        run('docker exec -w /var/www/app coffreo-php vendor/bin/phpstan analyse src tests --level=9');
+        run('docker exec -w /var/www/app coffreo-php vendor/bin/phpstan analyse src tests --level=9 --memory-limit=512M');
 
         io()->title('Initialisation de la base de données de test');
 
