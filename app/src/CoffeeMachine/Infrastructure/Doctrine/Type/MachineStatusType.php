@@ -10,7 +10,7 @@ class MachineStatusType extends StringType
 {
     public const NAME = 'machine_status';
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value instanceof MachineStatus ? $value->getValue() : $value;
     }
