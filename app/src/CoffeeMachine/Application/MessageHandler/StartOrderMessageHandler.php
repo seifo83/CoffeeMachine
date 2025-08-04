@@ -108,6 +108,9 @@ class StartOrderMessageHandler
         }
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function publishEvent(string $orderUuid, string $coffeeType, string $status, ?string $description = null, int $stepIndex = 0): void
     {
         $payload = [
@@ -119,7 +122,7 @@ class StartOrderMessageHandler
             'timestamp' => (new \DateTimeImmutable())->format(DATE_ATOM),
         ];
 
-        $jsonPayload = json_encode($payload);
+        $jsonPayload = json_encode($payload, JSON_THROW_ON_ERROR);
 
         $update = new Update(
             ["orders/{$orderUuid}"],

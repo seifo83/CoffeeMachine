@@ -17,6 +17,10 @@ class MercureController extends AbstractController
         try {
             $secret = $this->getParameter('app.mercure_jwt_secret');
 
+            if (!is_string($secret) || '' === $secret) {
+                throw new \RuntimeException('Mercure JWT secret is not configured or empty.');
+            }
+
             $config = Configuration::forSymmetricSigner(
                 new Sha256(),
                 InMemory::plainText($secret)
