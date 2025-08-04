@@ -86,6 +86,7 @@ class CoffeeOrderTest extends TestCase
         $this->assertCount(1, $events);
         $this->assertInstanceOf(OrderCompleted::class, $events[0]);
     }
+
     public function testItEmitsOrderStartedEventWhenOrderIsStarted(): void
     {
         $order = new CoffeeOrder(

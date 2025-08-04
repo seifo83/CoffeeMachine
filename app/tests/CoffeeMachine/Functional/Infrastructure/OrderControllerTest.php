@@ -3,7 +3,10 @@
 namespace App\Tests\CoffeeMachine\Functional\Infrastructure;
 
 use App\CoffeeMachine\Domain\Entity\CoffeeMachine;
+use App\CoffeeMachine\Domain\ValueObject\CoffeeIntensity;
+use App\CoffeeMachine\Domain\ValueObject\CoffeeType;
 use App\CoffeeMachine\Domain\ValueObject\MachineStatus;
+use App\CoffeeMachine\Domain\ValueObject\SugarLevel;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -11,9 +14,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 use function PHPUnit\Framework\assertArrayHasKey;
-use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertNotEmpty;
+use function PHPUnit\Framework\assertTrue;
 
-class CoffeeMachineControllerTest extends WebTestCase
+class OrderControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private ?EntityManagerInterface $entityManager = null;
@@ -68,14 +72,22 @@ class CoffeeMachineControllerTest extends WebTestCase
 
         $machine = new CoffeeMachine(new MachineStatus('on'));
         $this->entityManager->persist($machine);
+
+        $order = $machine->createOrder(
+            new CoffeeType('espresso'),
+            new CoffeeIntensity('medium'),
+            new SugarLevel('1_dose')
+        );
+
+        if (null !== $order) {
+            $this->entityManager->persist($order);
+        }
+
         $this->entityManager->flush();
 
         $this->machineId = $machine->getUuid();
     }
 
-    /**
-     * @throws \JsonException
-     */
     protected function getToken(): string
     {
         $json = json_encode(['username' => 'admin', 'password' => 'admin']);
@@ -106,58 +118,27 @@ class CoffeeMachineControllerTest extends WebTestCase
         return $data['token'];
     }
 
-    /**
-     * @throws \JsonException
-     */
-    public function testGetMachine(): void
+    public function testGetOrders(): void
     {
-        $this->client->request('GET', '/api/machines/'.$this->machineId, [], [], [
+        $this->client->request('GET', '/api/machines/'.$this->machineId.'/orders', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$this->token,
         ]);
 
         $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
 
         $content = $this->client->getResponse()->getContent();
         if (!is_string($content)) {
             $this->fail('Invalid response content');
         }
 
-        /** @var array<string, mixed> $data */
+        /** @var array<int, mixed> $data */
         $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        assertArrayHasKey('uuid', $data);
-        assertArrayHasKey('status', $data);
-        assertEquals($this->machineId, $data['uuid']);
-        assertEquals('on', $data['status']);
+        assertNotEmpty($data);
     }
 
-    /**
-     * @throws \JsonException
-     */
-    public function testGetMachineNotFound(): void
+    public function testCancelLastOrder(): void
     {
-        $this->client->request('GET', '/api/machines/non-existent-uuid', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer '.$this->token,
-        ]);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-
-        $content = $this->client->getResponse()->getContent();
-        if (!is_string($content)) {
-            $this->fail('Invalid response content');
-        }
-
-        /** @var array<string, mixed> $data */
-        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        assertArrayHasKey('error', $data);
-    }
-
-    /**
-     * @throws \JsonException
-     */
-    public function testStartMachine(): void
-    {
-        $this->client->request('POST', '/api/machines/'.$this->machineId.'/start', [], [], [
+        $this->client->request('DELETE', '/api/machines/'.$this->machineId.'/orders/last', [], [], [
             'HTTP_AUTHORIZATION' => 'Bearer '.$this->token,
         ]);
 
@@ -170,74 +151,45 @@ class CoffeeMachineControllerTest extends WebTestCase
 
         /** @var array<string, mixed> $data */
         $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        assertArrayHasKey('message', $data);
-        assertEquals('Machine started successfully', $data['message']);
+        assertArrayHasKey('success', $data);
+        assertTrue((bool) $data['success']);
     }
 
     /**
      * @throws \JsonException
      */
-    public function testStartMachineNotFound(): void
+    public function testCreateOrderWithInvalidData(): void
     {
-        $this->client->request('POST', '/api/machines/non-existent-uuid/start', [], [], [
+        $orderData = [
+            'type' => ' ',
+            'intensity' => 'invalid_intensity',
+            'sugar_level' => 'invalid_sugar',
+        ];
+
+        $json = json_encode($orderData, JSON_THROW_ON_ERROR);
+
+        $this->client->request('POST', '/api/machines/'.$this->machineId.'/orders', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
             'HTTP_AUTHORIZATION' => 'Bearer '.$this->token,
-        ]);
+        ], $json);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
 
         $content = $this->client->getResponse()->getContent();
-        if (!is_string($content)) {
-            $this->fail('Invalid response content');
-        }
+        $this->assertIsString($content, 'Invalid response content');
 
         /** @var array<string, mixed> $data */
         $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        assertArrayHasKey('error', $data);
-    }
 
-    public function testStopMachine(): void
-    {
-        $this->client->request('POST', '/api/machines/'.$this->machineId.'/stop', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer '.$this->token,
-        ]);
-
-        $this->assertResponseIsSuccessful();
-
-        $content = $this->client->getResponse()->getContent();
-        if (!is_string($content)) {
-            $this->fail('Invalid response content');
-        }
-
-        /** @var array<string, mixed> $data */
-        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        assertArrayHasKey('message', $data);
-        assertEquals('Machine stopped successfully', $data['message']);
-    }
-
-    /**
-     * @throws \JsonException
-     */
-    public function testStopMachineNotFound(): void
-    {
-        $this->client->request('POST', '/api/machines/non-existent-uuid/stop', [], [], [
-            'HTTP_AUTHORIZATION' => 'Bearer '.$this->token,
-        ]);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-
-        $content = $this->client->getResponse()->getContent();
-        if (!is_string($content)) {
-            $this->fail('Invalid response content');
-        }
-
-        /** @var array<string, mixed> $data */
-        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
-        assertArrayHasKey('error', $data);
+        $this->assertArrayHasKey('error', $data);
+        $this->assertIsString($data['error']);
+        $this->assertStringContainsString('type', $data['error']);
     }
 
     public function testUnauthorizedAccess(): void
     {
-        $this->client->request('GET', '/api/machines/'.$this->machineId);
+        $this->client->request('GET', '/api/machines/'.$this->machineId.'/orders');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
     }

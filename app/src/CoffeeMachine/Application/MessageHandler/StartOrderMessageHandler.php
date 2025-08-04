@@ -3,35 +3,25 @@
 namespace App\CoffeeMachine\Application\MessageHandler;
 
 use App\CoffeeMachine\Application\Message\StartOrderMessage;
+use App\CoffeeMachine\Application\Notify\OrderNotifyInterface;
 use App\CoffeeMachine\Domain\Event\Order\OrderCompleted;
 use App\CoffeeMachine\Domain\Event\Order\OrderStarted;
 use App\CoffeeMachine\Domain\Exception\MachineNotFoundException;
 use App\CoffeeMachine\Domain\Exception\OrderNotFoundException;
 use App\CoffeeMachine\Domain\Repository\CoffeeMachineRepositoryInterface;
 use App\CoffeeMachine\Domain\Repository\CoffeeOrderRepositoryInterface;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[AsMessageHandler]
 class StartOrderMessageHandler
 {
-    private CoffeeOrderRepositoryInterface $orderRepository;
-    private CoffeeMachineRepositoryInterface $machineRepository;
-    private EventDispatcherInterface $eventDispatcher;
-    private HubInterface $hub;
-
     public function __construct(
-        CoffeeOrderRepositoryInterface $orderRepository,
-        CoffeeMachineRepositoryInterface $machineRepository,
-        EventDispatcherInterface $eventDispatcher,
-        HubInterface $hub,
+        private readonly CoffeeOrderRepositoryInterface $orderRepository,
+        private readonly CoffeeMachineRepositoryInterface $machineRepository,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly OrderNotifyInterface $orderNotifier,
     ) {
-        $this->orderRepository = $orderRepository;
-        $this->machineRepository = $machineRepository;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->hub = $hub;
     }
 
     /**
@@ -51,7 +41,12 @@ class StartOrderMessageHandler
                 throw new MachineNotFoundException($message->getMachineUuid());
             }
 
-            $this->publishEvent($order->getUuid(), $order->getType()->getValue(), 'received', 'Commande reçue et en attente de traitement');
+            $this->orderNotifier->notify(
+                $order->getUuid(),
+                $order->getType()->getValue(),
+                'received',
+                'Commande reçue et en attente de traitement'
+            );
             sleep(2);
 
             $order->start();
@@ -69,7 +64,7 @@ class StartOrderMessageHandler
 
             foreach ($steps as [$status, $description, $stepIndex]) {
                 sleep(1);
-                $this->publishEvent(
+                $this->orderNotifier->notify(
                     $order->getUuid(),
                     $order->getType()->getValue(),
                     $status,
@@ -86,7 +81,7 @@ class StartOrderMessageHandler
             $event = new OrderCompleted($order->getUuid(), $order->getType()->getValue(), 6);
             $this->eventDispatcher->dispatch($event);
 
-            $this->publishEvent(
+            $this->orderNotifier->notify(
                 $order->getUuid(),
                 $order->getType()->getValue(),
                 'ready',
@@ -97,7 +92,7 @@ class StartOrderMessageHandler
             error_log('Erreur dans StartOrderMessageHandler: '.$e->getMessage());
 
             if (isset($order)) {
-                $this->publishEvent(
+                $this->orderNotifier->notify(
                     $order->getUuid(),
                     $order->getType()->getValue(),
                     'ready',
@@ -105,31 +100,6 @@ class StartOrderMessageHandler
                     6
                 );
             }
-        }
-    }
-
-    private function publishEvent(string $orderUuid, string $coffeeType, string $status, ?string $description = null, int $stepIndex = 0): void
-    {
-        $payload = [
-            'orderUuid' => $orderUuid,
-            'status' => $status,
-            'type' => $coffeeType,
-            'description' => $description,
-            'stepIndex' => $stepIndex,
-            'timestamp' => (new \DateTimeImmutable())->format(DATE_ATOM),
-        ];
-
-        $jsonPayload = json_encode($payload);
-
-        $update = new Update(
-            ["orders/{$orderUuid}"],
-            $jsonPayload
-        );
-
-        try {
-            $this->hub->publish($update);
-        } catch (\Exception $e) {
-            error_log('Erreur lors de la publication sur Mercure: '.$e->getMessage());
         }
     }
 }

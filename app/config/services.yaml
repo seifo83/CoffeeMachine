@@ -50,3 +50,9 @@ services:
     # Resolver
     App\CoffeeMachine\Infrastructure\Resolver\RequestDTOResolver:
         tags: [ 'controller.argument_value_resolver' ]
+
+    # Notify
+    App\CoffeeMachine\Application\Notify\OrderNotifyInterface:
+        alias: App\CoffeeMachine\Infrastructure\Notify\MercureOrderNotify
+
+

@@ -10,7 +10,7 @@ class SugarLevelType extends StringType
 {
     public const NAME = 'sugar_level';
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value instanceof SugarLevel ? $value->getValue() : $value;
     }

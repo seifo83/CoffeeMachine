@@ -10,7 +10,7 @@ class OrderStatusType extends StringType
 {
     public const NAME = 'order_status';
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value instanceof OrderStatus ? $value->getValue() : $value;
     }

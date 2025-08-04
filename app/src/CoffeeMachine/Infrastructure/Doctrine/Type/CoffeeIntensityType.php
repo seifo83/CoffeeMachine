@@ -10,7 +10,7 @@ class CoffeeIntensityType extends StringType
 {
     public const NAME = 'coffee_intensity';
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value instanceof CoffeeIntensity ? $value->getValue() : $value;
     }
